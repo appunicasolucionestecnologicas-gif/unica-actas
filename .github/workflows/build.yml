@@ -11,7 +11,7 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Install system dependencies
+    - name: Install dependencies
       run: |
         sudo apt-get update -qq
         sudo apt-get install -y \
@@ -21,16 +21,13 @@ jobs:
           libncurses5-dev libncursesw5-dev cmake
         pip install buildozer cython
 
-    - name: Accept Android licenses
+    - name: Build APK
+      env:
+        ACCEPT_EULA: Y
       run: |
         mkdir -p $HOME/.android
         touch $HOME/.android/repositories.cfg
-        yes | buildozer android update 2>/dev/null || true
-        find $HOME/.buildozer -name "sdkmanager" | head -1 | xargs -I{} sh -c 'yes | {} --licenses' 2>/dev/null || true
-
-    - name: Build APK
-      run: |
-        yes | buildozer android debug 2>&1
+        buildozer android debug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
