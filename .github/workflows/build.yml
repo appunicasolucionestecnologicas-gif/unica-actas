@@ -1,3 +1,4 @@
+
 name: Build APK
 on: [push]
 jobs:
@@ -21,16 +22,14 @@ jobs:
           libncurses5-dev libncursesw5-dev cmake
         pip install buildozer cython
 
-    - name: Setup Android SDK
+    - name: Accept SDK licenses manually
       run: |
-        mkdir -p $HOME/.android
-        touch $HOME/.android/repositories.cfg
-        buildozer android update || true
-        SDKMANAGER=$(find $HOME/.buildozer -name "sdkmanager" 2>/dev/null | head -1)
-        if [ -n "$SDKMANAGER" ]; then
-          yes | $SDKMANAGER --licenses || true
-          yes | $SDKMANAGER "build-tools;33.0.2" "platform-tools" "platforms;android-33" || true
-        fi
+        ANDROID_SDK=$HOME/.buildozer/android/platform/android-sdk
+        mkdir -p $ANDROID_SDK/licenses
+        echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > $ANDROID_SDK/licenses/android-sdk-license
+        echo "d56f5187479451eabf01fb78af6dfcb131a6481e" >> $ANDROID_SDK/licenses/android-sdk-license
+        echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" >> $ANDROID_SDK/licenses/android-sdk-license
+        echo "84831b9409646a918e30573bab4c9c91346d8abd" > $ANDROID_SDK/licenses/android-sdk-preview-license
 
     - name: Build APK
       run: buildozer android debug
